@@ -136,12 +136,10 @@ function findRetellWidget() {
     const fab = sr.getElementById("retell-fab");
     if (fab) {
       retellShadowRoot = sr;
-      // Hide visually but keep clickable so we can programmatically trigger it
-      fab.style.setProperty("opacity", "0", "important");
-      fab.style.setProperty("pointer-events", "none", "important");
-      fab.style.setProperty("width", "0", "important");
-      fab.style.setProperty("height", "0", "important");
-      fab.style.setProperty("overflow", "hidden", "important");
+      // Move off-screen but keep fully functional for programmatic clicks
+      fab.style.setProperty("position", "fixed", "important");
+      fab.style.setProperty("left", "-9999px", "important");
+      fab.style.setProperty("top", "-9999px", "important");
       return true;
     }
   }
@@ -153,24 +151,29 @@ const _hi = setInterval(() => {
 }, 500);
 setTimeout(() => clearInterval(_hi), 30000);
 
-// Helper: programmatically open the Retell chat widget
-// Uses the widget's own FAB click to keep its internal state in sync.
+// Helper: programmatically open the Retell chat widget.
+// Uses the widget's own FAB click to keep its internal state in sync,
+// with a fallback to direct display manipulation.
 // Optionally pre-fill a message. Returns true if the widget was found.
 function openRetellChat(message) {
   if (!retellShadowRoot) findRetellWidget();
   if (!retellShadowRoot) return false;
 
-  const fab = retellShadowRoot.getElementById("retell-fab");
+  const retellFab = retellShadowRoot.getElementById("retell-fab");
   const chat = retellShadowRoot.getElementById("retell-chat");
-  if (!fab || !chat) return false;
+  if (!chat) return false;
 
-  // Only open if not already open — click the FAB to use the widget's own toggle
+  // Open the chat if not already open
   if (chat.style.display !== "flex") {
-    fab.click();
+    // Try clicking the widget's own FAB first (keeps internal state in sync)
+    if (retellFab) retellFab.click();
+    // Fallback: if click didn't work, set display directly
+    if (chat.style.display !== "flex") {
+      chat.style.display = "flex";
+    }
   }
 
   if (message) {
-    // Wait for chat to fully open, then fill and send the message
     setTimeout(() => {
       const input = retellShadowRoot.getElementById("retell-input");
       if (!input) return;
