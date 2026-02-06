@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tertiary Infotech Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Retell Chat Widget -->
+    <script
+      id="retell-widget"
+      src="https://dashboard.retellai.com/retell-widget.js"
+      type="module"
+      data-public-key="public_key_e1e788117b3fcc49c811e"
+      data-agent-id="agent_e94708d2be383cc9083a9f9621"
+      data-agent-version="0"
+      data-title="Tertiary Infotech Academy"
+      data-color="#1a73e8"
+      data-bot-name="Sarah"
+      data-popup-message="Hi! Need help with courses, funding, or schedules?"
+      data-show-ai-popup="true"
+      data-show-ai-popup-time="5"
+      data-auto-open="false"
+    ></script>
+  </head>
+  <body>
+    <!-- Nav -->
+    <nav id="navbar">
+      <div class="nav-inner">
+        <a href="#" class="logo">Tertiary<span>Infotech</span></a>
+        <ul class="nav-links">
+          <li><a href="#courses">Courses</a></li>
+          <li><a href="#why-us">Why Us</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#contact" class="nav-cta">Get Started</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="badge">SkillsFuture &amp; WSQ Accredited</div>
+        <h1>Advance Your Career with <span class="highlight">In-Demand Tech Skills</span></h1>
+        <p>Industry-relevant IT courses designed for working adults. Learn from experienced practitioners and get certified — with funding support available.</p>
+        <div class="hero-buttons">
+          <a href="#courses" class="btn btn-primary">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Browse Courses
+          </a>
+          <a href="javascript:void(0)" class="btn btn-secondary" onclick="startVoiceCall()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            Talk to Sarah (AI)
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-number">2,500+</div>
+          <div class="stat-label">Graduates</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Courses</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">95%</div>
+          <div class="stat-label">Satisfaction Rate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">10+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses -->
+    <section id="courses">
+      <div class="section-header">
+        <h2>Popular Courses</h2>
+        <p>Hands-on training programmes designed to equip you with practical, job-ready skills.</p>
+      </div>
+      <div class="courses-grid">
+        <div class="course-card">
+          <div class="course-icon">&#128187;</div>
+          <h3>Cybersecurity Fundamentals</h3>
+          <p>Learn to identify threats, manage risks, and implement security measures to protect digital assets.</p>
+          <div class="course-meta">
+            <span>&#128336; 40 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-icon">&#9729;&#65039;</div>
+          <h3>Cloud Computing &amp; AWS</h3>
+          <p>Master cloud infrastructure, deployment, and services on the AWS platform from the ground up.</p>
+          <div class="course-meta">
+            <span>&#128336; 36 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-icon">&#128202;</div>
+          <h3>Data Analytics with Python</h3>
+          <p>Harness the power of Python for data wrangling, visualisation, and business intelligence.</p>
+          <div class="course-meta">
+            <span>&#128336; 32 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-icon">&#129302;</div>
+          <h3>AI &amp; Machine Learning</h3>
+          <p>Understand core AI concepts, build models, and apply machine learning to real-world problems.</p>
+          <div class="course-meta">
+            <span>&#128336; 44 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-icon">&#127760;</div>
+          <h3>Full-Stack Web Development</h3>
+          <p>Build modern web applications end-to-end using HTML, CSS, JavaScript, and backend frameworks.</p>
+          <div class="course-meta">
+            <span>&#128336; 48 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-icon">&#128241;</div>
+          <h3>Digital Marketing &amp; SEO</h3>
+          <p>Drive growth with search engine optimisation, social media marketing, and analytics strategies.</p>
+          <div class="course-meta">
+            <span>&#128336; 28 hrs</span>
+            <span>&#127891; Certificate</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Us -->
+    <section id="why-us">
+      <div class="section-header">
+        <h2>Why Choose Us</h2>
+        <p>We make professional upskilling accessible, practical, and career-focused.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">&#128176;</div>
+          <div>
+            <h3>SkillsFuture Funding</h3>
+            <p>Eligible for SkillsFuture Credit, subsidies, and absentee payroll support to reduce your out-of-pocket costs.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#128188;</div>
+          <div>
+            <h3>Industry Practitioners</h3>
+            <p>Learn directly from professionals with real-world experience in the tech industry.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#128218;</div>
+          <div>
+            <h3>Hands-On Curriculum</h3>
+            <p>Project-based learning with practical labs, case studies, and portfolio-ready assignments.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#128337;</div>
+          <div>
+            <h3>Flexible Scheduling</h3>
+            <p>Weekday, evening, and weekend classes designed to fit around your work commitments.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#127942;</div>
+          <div>
+            <h3>Recognised Certifications</h3>
+            <p>Earn WSQ and industry-recognised certifications that employers trust and value.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#129309;</div>
+          <div>
+            <h3>Career Support</h3>
+            <p>Get guidance on job placement, resume building, and interview preparation after completing your course.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials">
+      <div class="section-header">
+        <h2>What Our Students Say</h2>
+        <p>Hear from graduates who have transformed their careers with us.</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"The cybersecurity course gave me the confidence to transition into a security analyst role. The hands-on labs were incredibly valuable."</blockquote>
+          <div class="testimonial-author">
+            <div class="avatar">JT</div>
+            <div>
+              <div class="name">Jason Tan</div>
+              <div class="role">Security Analyst</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"I used my SkillsFuture credits for the data analytics programme. Within 3 months of graduating, I landed a new role with a 30% pay increase."</blockquote>
+          <div class="testimonial-author">
+            <div class="avatar">PL</div>
+            <div>
+              <div class="name">Priya Lakshmi</div>
+              <div class="role">Data Analyst</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"The instructors are real industry practitioners, not just lecturers reading slides. The practical knowledge I gained was immediately applicable at work."</blockquote>
+          <div class="testimonial-author">
+            <div class="avatar">WK</div>
+            <div>
+              <div class="name">Wei Kiat Lim</div>
+              <div class="role">IT Manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="contact">
+      <div class="cta-box">
+        <h2>Ready to Level Up?</h2>
+        <p>Talk to Sarah, our AI voice assistant, to find the right course, check funding eligibility, or book a consultation.</p>
+        <a href="javascript:void(0)" class="btn btn-primary" onclick="startVoiceCall()">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call Sarah Now
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-left">
+          <a href="#" class="logo">Tertiary<span>Infotech</span></a>
+          <p>&copy; 2026 Tertiary Infotech Academy. All rights reserved.</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="#courses">Courses</a></li>
+          <li><a href="#why-us">About</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <!-- Voice Call Modal -->
+    <div class="voice-modal" id="voice-modal">
+      <div class="vm-card">
+        <div class="vm-avatar" id="vm-avatar">
+          <div class="vm-avatar-inner">S</div>
+          <div class="vm-ripple"></div>
+          <div class="vm-ripple vm-ripple-2"></div>
+          <div class="vm-ripple vm-ripple-3"></div>
+        </div>
+        <div class="vm-name">Sarah</div>
+        <div class="vm-status" id="vm-status">Connecting...</div>
+        <div class="vm-timer" id="vm-timer">00:00</div>
+        <button class="vm-hangup" id="vm-hangup" aria-label="End call">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
