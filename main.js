@@ -136,7 +136,12 @@ function findRetellWidget() {
     const fab = sr.getElementById("retell-fab");
     if (fab) {
       retellShadowRoot = sr;
-      fab.style.setProperty("display", "none", "important");
+      // Hide visually but keep clickable so we can programmatically trigger it
+      fab.style.setProperty("opacity", "0", "important");
+      fab.style.setProperty("pointer-events", "none", "important");
+      fab.style.setProperty("width", "0", "important");
+      fab.style.setProperty("height", "0", "important");
+      fab.style.setProperty("overflow", "hidden", "important");
       return true;
     }
   }
@@ -149,17 +154,48 @@ const _hi = setInterval(() => {
 setTimeout(() => clearInterval(_hi), 30000);
 
 // Helper: programmatically open the Retell chat widget
-function openRetellChat() {
+// Uses the widget's own FAB click to keep its internal state in sync.
+// Optionally pre-fill a message. Returns true if the widget was found.
+function openRetellChat(message) {
   if (!retellShadowRoot) findRetellWidget();
-  if (!retellShadowRoot) return;
+  if (!retellShadowRoot) return false;
 
-  // Directly show the chat window (same as what the widget's FAB click does)
+  const fab = retellShadowRoot.getElementById("retell-fab");
   const chat = retellShadowRoot.getElementById("retell-chat");
-  if (chat) {
-    chat.style.display = "flex";
-    const input = retellShadowRoot.getElementById("retell-input");
-    if (input) setTimeout(() => input.focus(), 150);
+  if (!fab || !chat) return false;
+
+  // Only open if not already open — click the FAB to use the widget's own toggle
+  if (chat.style.display !== "flex") {
+    fab.click();
   }
+
+  if (message) {
+    // Wait for chat to fully open, then fill and send the message
+    setTimeout(() => {
+      const input = retellShadowRoot.getElementById("retell-input");
+      if (!input) return;
+
+      const nativeSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set
+        || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      if (nativeSetter) nativeSetter.call(input, message);
+      else input.value = message;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+
+      setTimeout(() => {
+        const sendBtn = retellShadowRoot.getElementById("retell-send")
+          || retellShadowRoot.querySelector("button[type='submit']")
+          || retellShadowRoot.querySelector(".send-button");
+        if (sendBtn) sendBtn.click();
+      }, 150);
+    }, 300);
+  } else {
+    setTimeout(() => {
+      const input = retellShadowRoot.getElementById("retell-input");
+      if (input) input.focus();
+    }, 300);
+  }
+
+  return true;
 }
 
 // ── Assistant Popup ──
@@ -186,8 +222,8 @@ apClose.addEventListener("click", closePopup);
 apChatBtn.addEventListener("click", () => {
   apChatBtn.classList.add("ap-option-active");
   apTalkBtn.classList.remove("ap-option-active");
+  if (!openRetellChat()) return;
   closePopup();
-  openRetellChat();
 });
 
 // Talk option → start voice call
@@ -202,9 +238,9 @@ apTalkBtn.addEventListener("click", () => {
 function sendMessage() {
   const msg = apInput.value.trim();
   if (!msg) return;
+  if (!openRetellChat(msg)) return; // don't close if widget isn't ready
   apInput.value = "";
   closePopup();
-  openRetellChat();
 }
 
 apSendBtn.addEventListener("click", sendMessage);
