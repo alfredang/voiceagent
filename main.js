@@ -122,12 +122,11 @@ modal.addEventListener("click", (e) => {
   if (e.target === modal && !callActive) hideModal();
 });
 
-// ── Hide default Retell widget FAB & programmatically open chat ──
-// The Retell widget uses an open Shadow DOM inside a fixed-position div.
-// Inside: #retell-fab (button), #retell-chat (chat window), #retell-input (text input).
-// The widget's own FAB click handler just toggles retell-chat display between none/flex.
-// We hide the FAB and directly toggle the chat window ourselves.
+// ── Retell Chat Widget (hidden — used as backend for our custom popup) ──
 let retellShadowRoot = null;
+let retellChatReady = false;
+let retellObserver = null;
+let lastKnownMessageCount = 0;
 
 function findRetellWidget() {
   for (const el of document.querySelectorAll("body > *")) {
@@ -136,10 +135,12 @@ function findRetellWidget() {
     const fab = sr.getElementById("retell-fab");
     if (fab) {
       retellShadowRoot = sr;
-      // Move off-screen but keep fully functional for programmatic clicks
-      fab.style.setProperty("position", "fixed", "important");
-      fab.style.setProperty("left", "-9999px", "important");
-      fab.style.setProperty("top", "-9999px", "important");
+      // Hide the entire widget container off-screen
+      el.style.setProperty("position", "fixed", "important");
+      el.style.setProperty("left", "-9999px", "important");
+      el.style.setProperty("top", "-9999px", "important");
+      el.style.setProperty("opacity", "0", "important");
+      el.style.setProperty("pointer-events", "none", "important");
       return true;
     }
   }
@@ -147,56 +148,72 @@ function findRetellWidget() {
 }
 
 const _hi = setInterval(() => {
-  if (findRetellWidget()) clearInterval(_hi);
+  if (findRetellWidget()) {
+    clearInterval(_hi);
+    initRetellChat();
+  }
 }, 500);
 setTimeout(() => clearInterval(_hi), 30000);
 
-// Helper: programmatically open the Retell chat widget.
-// Uses the widget's own FAB click to keep its internal state in sync,
-// with a fallback to direct display manipulation.
-// Optionally pre-fill a message. Returns true if the widget was found.
-function openRetellChat(message) {
-  if (!retellShadowRoot) findRetellWidget();
+// Open the hidden Retell chat and set up a MutationObserver to capture responses
+function initRetellChat() {
+  if (!retellShadowRoot) return;
+
+  // Click the FAB to open the chat session
+  const retellFab = retellShadowRoot.getElementById("retell-fab");
+  if (retellFab) retellFab.click();
+
+  // Fallback: force display
+  const chat = retellShadowRoot.getElementById("retell-chat");
+  if (chat && chat.style.display !== "flex") {
+    chat.style.display = "flex";
+  }
+
+  // Watch #retell-messages for new bot responses
+  const messagesEl = retellShadowRoot.getElementById("retell-messages");
+  if (messagesEl) {
+    lastKnownMessageCount = messagesEl.children.length;
+    retellObserver = new MutationObserver(() => {
+      const currentCount = messagesEl.children.length;
+      if (currentCount > lastKnownMessageCount) {
+        // New messages appeared — check for bot responses
+        for (let i = lastKnownMessageCount; i < currentCount; i++) {
+          const msgEl = messagesEl.children[i];
+          const text = msgEl?.textContent?.trim();
+          // Skip user messages (they contain our own sent text)
+          if (text && !msgEl.classList.contains("user") && !msgEl.querySelector("[data-user]")) {
+            removeTypingIndicator();
+            addMessage("sarah", text);
+          }
+        }
+        lastKnownMessageCount = currentCount;
+      }
+    });
+    retellObserver.observe(messagesEl, { childList: true, subtree: true });
+    retellChatReady = true;
+  }
+}
+
+// Send a message to the hidden Retell chat widget
+function sendToRetell(text) {
   if (!retellShadowRoot) return false;
 
-  const retellFab = retellShadowRoot.getElementById("retell-fab");
-  const chat = retellShadowRoot.getElementById("retell-chat");
-  if (!chat) return false;
+  const input = retellShadowRoot.getElementById("retell-input");
+  if (!input) return false;
 
-  // Open the chat if not already open
-  if (chat.style.display !== "flex") {
-    // Try clicking the widget's own FAB first (keeps internal state in sync)
-    if (retellFab) retellFab.click();
-    // Fallback: if click didn't work, set display directly
-    if (chat.style.display !== "flex") {
-      chat.style.display = "flex";
-    }
-  }
+  // Set value using native setter to trigger framework reactivity
+  const nativeSetter =
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+  if (nativeSetter) nativeSetter.call(input, text);
+  else input.value = text;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
 
-  if (message) {
-    setTimeout(() => {
-      const input = retellShadowRoot.getElementById("retell-input");
-      if (!input) return;
-
-      const nativeSetter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set
-        || Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-      if (nativeSetter) nativeSetter.call(input, message);
-      else input.value = message;
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-
-      setTimeout(() => {
-        const sendBtn = retellShadowRoot.getElementById("retell-send")
-          || retellShadowRoot.querySelector("button[type='submit']")
-          || retellShadowRoot.querySelector(".send-button");
-        if (sendBtn) sendBtn.click();
-      }, 150);
-    }, 300);
-  } else {
-    setTimeout(() => {
-      const input = retellShadowRoot.getElementById("retell-input");
-      if (input) input.focus();
-    }, 300);
-  }
+  // Click the send button
+  setTimeout(() => {
+    const sendBtn = retellShadowRoot.querySelector(".retell-send-btn")
+      || retellShadowRoot.querySelector("button[type='submit']");
+    if (sendBtn) sendBtn.click();
+  }, 100);
 
   return true;
 }
@@ -209,9 +226,13 @@ const apChatBtn = document.getElementById("ap-chat-btn");
 const apTalkBtn = document.getElementById("ap-talk-btn");
 const apInput = document.getElementById("ap-input");
 const apSendBtn = document.getElementById("ap-send-btn");
+const apMessages = document.getElementById("ap-messages");
 
 function togglePopup() {
   popup.classList.toggle("open");
+  if (popup.classList.contains("open")) {
+    setTimeout(() => apInput.focus(), 300);
+  }
 }
 
 function closePopup() {
@@ -221,12 +242,11 @@ function closePopup() {
 fab.addEventListener("click", togglePopup);
 apClose.addEventListener("click", closePopup);
 
-// Chat option → open Retell chat directly
+// Chat option — just highlight (messages are already inline)
 apChatBtn.addEventListener("click", () => {
   apChatBtn.classList.add("ap-option-active");
   apTalkBtn.classList.remove("ap-option-active");
-  if (!openRetellChat()) return;
-  closePopup();
+  apInput.focus();
 });
 
 // Talk option → start voice call
@@ -237,13 +257,51 @@ apTalkBtn.addEventListener("click", () => {
   startVoiceCall();
 });
 
-// Send message → open Retell chat with the typed message
+// Add a message bubble to the popup
+function addMessage(sender, text) {
+  const div = document.createElement("div");
+  div.className = `chat-message ${sender}`;
+  const p = document.createElement("p");
+  p.textContent = text;
+  div.appendChild(p);
+  apMessages.appendChild(div);
+  // Scroll to bottom
+  const body = popup.querySelector(".ap-body");
+  if (body) body.scrollTop = body.scrollHeight;
+}
+
+function showTypingIndicator() {
+  if (apMessages.querySelector(".typing-indicator")) return;
+  const div = document.createElement("div");
+  div.className = "typing-indicator";
+  div.innerHTML = "<span></span><span></span><span></span>";
+  apMessages.appendChild(div);
+  const body = popup.querySelector(".ap-body");
+  if (body) body.scrollTop = body.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const indicator = apMessages.querySelector(".typing-indicator");
+  if (indicator) indicator.remove();
+}
+
+// Send a chat message
 function sendMessage() {
   const msg = apInput.value.trim();
   if (!msg) return;
-  if (!openRetellChat(msg)) return; // don't close if widget isn't ready
+
   apInput.value = "";
-  closePopup();
+  addMessage("user", msg);
+  showTypingIndicator();
+
+  // Send to the hidden Retell widget
+  if (!sendToRetell(msg)) {
+    // If Retell widget isn't ready, show a fallback response
+    setTimeout(() => {
+      removeTypingIndicator();
+      addMessage("sarah", "I'm still loading — please try again in a moment!");
+    }, 1000);
+  }
 }
 
 apSendBtn.addEventListener("click", sendMessage);
