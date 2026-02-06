@@ -8,7 +8,7 @@
 
 > A landing page for Tertiary Infotech Academy featuring an AI voice assistant (Sarah) powered by Retell.io, with both chat widget and real-time voice call capabilities.
 
-[Live Demo](https://tertiary-voiceagent.vercel.app)
+[Live Demo](https://retell-lake.vercel.app)
 
 ![Screenshot](screenshot.png)
 
