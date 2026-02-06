@@ -122,101 +122,9 @@ modal.addEventListener("click", (e) => {
   if (e.target === modal && !callActive) hideModal();
 });
 
-// ── Retell Chat Widget (hidden — used as backend for our custom popup) ──
-let retellShadowRoot = null;
-let retellChatReady = false;
-let retellObserver = null;
-let lastKnownMessageCount = 0;
-
-function findRetellWidget() {
-  for (const el of document.querySelectorAll("body > *")) {
-    if (!el.shadowRoot) continue;
-    const sr = el.shadowRoot;
-    const fab = sr.getElementById("retell-fab");
-    if (fab) {
-      retellShadowRoot = sr;
-      // Hide the entire widget container off-screen
-      el.style.setProperty("position", "fixed", "important");
-      el.style.setProperty("left", "-9999px", "important");
-      el.style.setProperty("top", "-9999px", "important");
-      el.style.setProperty("opacity", "0", "important");
-      el.style.setProperty("pointer-events", "none", "important");
-      return true;
-    }
-  }
-  return false;
-}
-
-const _hi = setInterval(() => {
-  if (findRetellWidget()) {
-    clearInterval(_hi);
-    initRetellChat();
-  }
-}, 500);
-setTimeout(() => clearInterval(_hi), 30000);
-
-// Open the hidden Retell chat and set up a MutationObserver to capture responses
-function initRetellChat() {
-  if (!retellShadowRoot) return;
-
-  // Click the FAB to open the chat session
-  const retellFab = retellShadowRoot.getElementById("retell-fab");
-  if (retellFab) retellFab.click();
-
-  // Fallback: force display
-  const chat = retellShadowRoot.getElementById("retell-chat");
-  if (chat && chat.style.display !== "flex") {
-    chat.style.display = "flex";
-  }
-
-  // Watch #retell-messages for new bot responses
-  const messagesEl = retellShadowRoot.getElementById("retell-messages");
-  if (messagesEl) {
-    lastKnownMessageCount = messagesEl.children.length;
-    retellObserver = new MutationObserver(() => {
-      const currentCount = messagesEl.children.length;
-      if (currentCount > lastKnownMessageCount) {
-        // New messages appeared — check for bot responses
-        for (let i = lastKnownMessageCount; i < currentCount; i++) {
-          const msgEl = messagesEl.children[i];
-          const text = msgEl?.textContent?.trim();
-          // Skip user messages (they contain our own sent text)
-          if (text && !msgEl.classList.contains("user") && !msgEl.querySelector("[data-user]")) {
-            removeTypingIndicator();
-            addMessage("sarah", text);
-          }
-        }
-        lastKnownMessageCount = currentCount;
-      }
-    });
-    retellObserver.observe(messagesEl, { childList: true, subtree: true });
-    retellChatReady = true;
-  }
-}
-
-// Send a message to the hidden Retell chat widget
-function sendToRetell(text) {
-  if (!retellShadowRoot) return false;
-
-  const input = retellShadowRoot.getElementById("retell-input");
-  if (!input) return false;
-
-  // Set value using native setter to trigger framework reactivity
-  const nativeSetter =
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-  if (nativeSetter) nativeSetter.call(input, text);
-  else input.value = text;
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-
-  // Click the send button
-  setTimeout(() => {
-    const sendBtn = retellShadowRoot.querySelector(".retell-send-btn")
-      || retellShadowRoot.querySelector("button[type='submit']");
-    if (sendBtn) sendBtn.click();
-  }, 100);
-
-  return true;
-}
+// ── Gemini Chat Backend ──
+const CHAT_API_URL = "/api/chat";
+let chatHistory = [];
 
 // ── Assistant Popup ──
 const fab = document.getElementById("assistant-fab");
@@ -285,8 +193,8 @@ function removeTypingIndicator() {
   if (indicator) indicator.remove();
 }
 
-// Send a chat message
-function sendMessage() {
+// Send a chat message via Gemini API
+async function sendMessage() {
   const msg = apInput.value.trim();
   if (!msg) return;
 
@@ -294,13 +202,26 @@ function sendMessage() {
   addMessage("user", msg);
   showTypingIndicator();
 
-  // Send to the hidden Retell widget
-  if (!sendToRetell(msg)) {
-    // If Retell widget isn't ready, show a fallback response
-    setTimeout(() => {
-      removeTypingIndicator();
-      addMessage("sarah", "I'm still loading — please try again in a moment!");
-    }, 1000);
+  // Track in history
+  chatHistory.push({ role: "user", text: msg });
+
+  try {
+    const res = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg, history: chatHistory.slice(0, -1) }),
+    });
+
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+
+    const data = await res.json();
+    removeTypingIndicator();
+    addMessage("sarah", data.reply);
+    chatHistory.push({ role: "assistant", text: data.reply });
+  } catch (err) {
+    console.error("Chat error:", err);
+    removeTypingIndicator();
+    addMessage("sarah", "Sorry, something went wrong. Please try again!");
   }
 }
 

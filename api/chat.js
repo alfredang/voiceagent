@@ -1,45 +1,9 @@
-require("dotenv").config();
-const express = require("express");
-const app = express();
-const PORT = 3000;
-
-// ── API keys ──
-const RETELL_API_KEY = process.env.RETELL_API_KEY || "";
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-
-app.use(express.json());
-app.use(express.static(__dirname)); // serves index.html, styles.css, main.js
-
-// Endpoint that main.js calls to get an access token
-app.post("/api/create-web-call", async (req, res) => {
-  try {
-    const response = await fetch("https://api.retellai.com/v2/create-web-call", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RETELL_API_KEY}`,
-      },
-      body: JSON.stringify({
-        agent_id: req.body.agent_id,
-      }),
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("Retell API error:", response.status, text);
-      return res.status(response.status).json({ error: text });
-    }
-
-    const data = await response.json();
-    res.json({ access_token: data.access_token });
-  } catch (err) {
-    console.error("Server error:", err);
-    res.status(500).json({ error: "Failed to create web call" });
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
-});
 
-// Chat endpoint using Gemini API
-app.post("/api/chat", async (req, res) => {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
   const { message, history } = req.body;
 
   if (!message) {
@@ -58,7 +22,10 @@ Key information you should know:
 
 Keep responses concise (2-3 sentences max), friendly, and helpful. If asked about something outside the academy's scope, politely redirect to relevant academy topics.`;
 
+  // Build conversation contents
   const contents = [];
+
+  // Add conversation history if provided
   if (history && Array.isArray(history)) {
     for (const entry of history) {
       contents.push({
@@ -67,7 +34,12 @@ Keep responses concise (2-3 sentences max), friendly, and helpful. If asked abou
       });
     }
   }
-  contents.push({ role: "user", parts: [{ text: message }] });
+
+  // Add current message
+  contents.push({
+    role: "user",
+    parts: [{ text: message }],
+  });
 
   try {
     const response = await fetch(
@@ -76,7 +48,9 @@ Keep responses concise (2-3 sentences max), friendly, and helpful. If asked abou
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemInstruction }] },
+          system_instruction: {
+            parts: [{ text: systemInstruction }],
+          },
           contents,
         }),
       }
@@ -95,11 +69,7 @@ Keep responses concise (2-3 sentences max), friendly, and helpful. If asked abou
 
     res.json({ reply });
   } catch (err) {
-    console.error("Gemini error:", err);
+    console.error("Serverless function error:", err);
     res.status(500).json({ error: "Failed to get response" });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+}
