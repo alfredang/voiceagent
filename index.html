@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- Retell Chat Widget -->
+    <!-- Retell Chat Widget (hidden by default, opened programmatically) -->
     <script
       id="retell-widget"
       src="https://dashboard.retellai.com/retell-widget.js"
@@ -20,9 +20,9 @@
       data-title="Tertiary Infotech Academy"
       data-color="#1a73e8"
       data-bot-name="Sarah"
-      data-popup-message="Hi! Need help with courses, funding, or schedules?"
-      data-show-ai-popup="true"
-      data-show-ai-popup-time="5"
+      data-popup-message=""
+      data-show-ai-popup="false"
+      data-show-ai-popup-time="0"
       data-auto-open="false"
     ></script>
   </head>
@@ -267,6 +267,73 @@
         </ul>
       </div>
     </footer>
+
+    <!-- Custom Chat/Talk Popup -->
+    <div class="assistant-popup" id="assistant-popup">
+      <!-- Header -->
+      <div class="ap-header">
+        <div class="ap-header-left">
+          <div class="ap-avatar-large">S</div>
+          <div>
+            <div class="ap-name">Sarah</div>
+            <div class="ap-role"><span class="ap-online"></span> AI Assistant</div>
+          </div>
+        </div>
+        <button class="ap-close" id="ap-close" aria-label="Close">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="ap-body">
+        <!-- Chat / Talk option cards -->
+        <div class="ap-options">
+          <button class="ap-option ap-option-active" id="ap-chat-btn">
+            <div class="ap-option-icon ap-icon-chat">
+              <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="ap-option-label">Chat</div>
+            <div class="ap-option-desc">Type your message</div>
+          </button>
+          <button class="ap-option" id="ap-talk-btn">
+            <div class="ap-option-icon ap-icon-talk">
+              <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <div class="ap-option-label">Talk</div>
+            <div class="ap-option-desc">Voice conversation</div>
+          </button>
+        </div>
+
+        <!-- Greeting bubble -->
+        <div class="ap-greeting">
+          <p>Hi! I'm Sarah, your AI assistant. How can I help you today? Ask me about courses, funding, or schedules!</p>
+        </div>
+      </div>
+
+      <!-- Chat input area -->
+      <div class="ap-footer">
+        <div class="ap-input-row">
+          <input type="text" class="ap-input" id="ap-input" placeholder="Type your message..." />
+          <button class="ap-send" id="ap-send-btn" aria-label="Send">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="ap-quick">
+          <div class="ap-quick-label">QUICK QUESTIONS</div>
+          <div class="ap-quick-chips">
+            <button class="ap-chip" data-q="What courses do you offer?">Course list</button>
+            <button class="ap-chip" data-q="How does SkillsFuture funding work?">Funding info</button>
+            <button class="ap-chip" data-q="How do I enroll?">Enrolment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Assistant Button -->
+    <button class="assistant-fab" id="assistant-fab" aria-label="Open assistant">
+      <span class="fab-avatar">S</span>
+      <span class="fab-pulse"></span>
+    </button>
 
     <!-- Voice Call Modal -->
     <div class="voice-modal" id="voice-modal">

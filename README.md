@@ -10,6 +10,8 @@
 
 [Live Demo](https://tertiary-voiceagent.vercel.app)
 
+![Screenshot](screenshot.png)
+
 ---
 
 ## Table of Contents
@@ -71,7 +73,7 @@ graph TB
 ## Project Structure
 
 ```
-tertiary-voiceagent/
+voiceagent/
 ├── api/
 │   └── create-web-call.js   # Vercel serverless function (API proxy)
 ├── .env                      # Environment variables (gitignored)

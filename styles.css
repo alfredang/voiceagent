@@ -580,6 +580,326 @@ footer {
   color: var(--gray-900);
 }
 
+/* ── Floating Assistant Button (Avatar style) ── */
+.assistant-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-600), #4f46e5);
+  border: 3px solid var(--white);
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(26, 115, 232, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.assistant-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(26, 115, 232, 0.55);
+}
+
+.assistant-fab:active {
+  transform: scale(0.95);
+}
+
+.fab-avatar {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fab-pulse {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 16px;
+  height: 16px;
+  background: #34d399;
+  border-radius: 50%;
+  border: 2.5px solid var(--white);
+}
+
+/* ── Assistant Popup ── */
+.assistant-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  z-index: 899;
+  width: 380px;
+  max-height: calc(100vh - 140px);
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.95);
+  transition: opacity 0.25s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.assistant-popup.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Header */
+.ap-header {
+  background: linear-gradient(135deg, var(--blue-600), #4f46e5);
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.ap-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ap-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--white);
+}
+
+.ap-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--white);
+}
+
+.ap-role {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ap-online {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  display: inline-block;
+}
+
+.ap-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: var(--white);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.ap-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Body */
+.ap-body {
+  padding: 20px 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Option cards */
+.ap-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ap-option {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 18px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ap-option:hover,
+.ap-option.ap-option-active {
+  border-color: var(--blue-600);
+  background: var(--blue-50);
+}
+
+.ap-option:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.ap-option-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+}
+
+.ap-icon-chat {
+  background: var(--blue-50);
+  color: var(--blue-600);
+}
+
+.ap-icon-talk {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.ap-option-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+}
+
+.ap-option-desc {
+  font-size: 0.72rem;
+  color: var(--gray-500);
+}
+
+/* Greeting bubble */
+.ap-greeting {
+  background: var(--gray-50);
+  border-radius: 14px 14px 14px 4px;
+  padding: 14px 16px;
+}
+
+.ap-greeting p {
+  font-size: 0.88rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Footer / input area */
+.ap-footer {
+  border-top: 1px solid var(--gray-100);
+  padding: 14px 16px 16px;
+  flex-shrink: 0;
+}
+
+.ap-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gray-50);
+  border-radius: 28px;
+  padding: 6px 6px 6px 18px;
+  border: 1px solid var(--gray-200);
+  margin-bottom: 14px;
+}
+
+.ap-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--gray-900);
+  outline: none;
+}
+
+.ap-input::placeholder {
+  color: var(--gray-500);
+}
+
+.ap-send {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--blue-600);
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.ap-send:hover {
+  background: var(--blue-700);
+}
+
+/* Quick questions */
+.ap-quick {
+  margin-top: 0;
+}
+
+.ap-quick-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.ap-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ap-chip {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.ap-chip:hover {
+  background: var(--blue-50);
+  border-color: var(--blue-600);
+  color: var(--blue-600);
+}
+
+/* Retell widget popup message hidden (we use our own greeting) */
+retell-widget::part(popup-message),
+.retell-widget-popup-message {
+  display: none !important;
+}
+
 /* Voice Call Modal */
 .voice-modal {
   position: fixed;
